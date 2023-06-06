@@ -6,7 +6,8 @@ var mxts8 = ["", "", "", "", "", "", "", ""]
 var qqs8 = ["", "", "", "", "", "", "", ""]
 var colorLst = ["table-primary", "table-secondary", "table-warning", "table-info"]
 var currentUser = ""
-var currentTime = 0
+var currentTime12 = 0
+var currentTime8 = 0
 var toast = null
 var lstTimes = 0
 var hc = []
@@ -14,6 +15,14 @@ var hz = []
 var isAdmin = false
 var timerId = null
 var userSelect = 1
+
+function changeTag() {
+    getMxtInfo()
+    saveData()
+    initial()
+    senderInfo()
+    triggerToast("更新成功", "请查看最新信息！")
+}
 
 function resetAllData(reload) {
     nums = ["00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
@@ -23,7 +32,8 @@ function resetAllData(reload) {
     mxts8 = ["", "", "", "", "", "", "", ""]
     qqs8 = ["", "", "", "", "", "", "", ""]
     currentUser = ""
-    currentTime = 0
+    currentTime8 = 0
+    currentTime12 = 0
     lstTimes = 0
     hc = []
     hz = []
@@ -79,7 +89,7 @@ function sendIPToBackend(ip) {
             console.log(xhr.responseText);
         }
     };
-    xhr.send(JSON.stringify({ ip: ip, currentUser: currentUser }));
+    xhr.send(JSON.stringify({ip: ip, currentUser: currentUser}));
 }
 
 function getLocalTime(timestamp) {
@@ -130,7 +140,8 @@ function saveData() {
         "mxts8": mxts8,
         "qqs8": qqs8,
         "currentUser": currentUser,
-        "currentTime": currentTime,
+        "currentTime8": currentTime8,
+        "currentTime12": currentTime12,
         "lstTimes": lstTimes,
         "hc": hc,
         "hz": hz,
@@ -150,6 +161,7 @@ function home() {
     tableShow8.style = "display: none;"
     lstDiv.style = "display: none;"
     userSelect = 1
+    changeTag()
 }
 
 function eight() {
@@ -164,6 +176,7 @@ function eight() {
     tableShow8.style = ""
     lstDiv.style = "display: none;"
     userSelect = 3
+    changeTag()
 }
 
 function twelve() {
@@ -178,6 +191,7 @@ function twelve() {
     tableShow8.style = "display: none;"
     lstDiv.style = "display: none;"
     userSelect = 2
+    changeTag()
 }
 
 function lst() {
@@ -192,6 +206,7 @@ function lst() {
     tableShow8.style = "display: none;"
     lstDiv.style = ""
     userSelect = 4
+    changeTag()
 
 }
 
@@ -233,6 +248,7 @@ function login() {
         saveData()
         setUser()
         triggerToast("登陆成功", `欢迎你，${isAdmin == false ? "用户" : "管理员"}：` + currentUser + '!')
+        getUserIP(sendIPToBackend);
     });
 
 
@@ -271,7 +287,8 @@ function senderInfo() {
             nums8: nums8,
             mxts8: mxts8,
             qqs8: qqs8,
-            currentTime: currentTime,
+            currentTime8: currentTime8,
+            currentTime12: currentTime12,
         })
     }).then(response => {
         console.log("sendInfo:", response.status)
@@ -407,17 +424,15 @@ function autoUpdateInfo() {
         nums8 = data['nums8']
         mxts8 = data['mxts8']
         qqs8 = data['qqs8']
-        currentTime = data['currentTime']
+        currentTime8 = data['currentTime8']
+        currentTime12 = data['currentTime12']
         const selectElement8 = document.getElementById('mySelect8');
         const selectElement = document.getElementById('mySelect');
-        if (currentTime > 0) {
-            selectElement.value = currentTime
-            if (currentTime > 4) {
-                selectElement8.value = 4
-            } else {
-                selectElement8.value = currentTime
-            }
-
+        if (currentTime12 > 0) {
+            selectElement.value = currentTime12
+        }
+        if (currentTime8 > 0) {
+            selectElement8.value = currentTime8
         }
         getMxtInfo()
         saveData()
@@ -434,23 +449,29 @@ function initial() {
     }
 
     const selectElement = document.getElementById('mySelect');
+
+    if (currentTime12 != 0 && currentTime12 < 13) {
+        selectElement.value = currentTime12
+    }
+
     selectElement.addEventListener('change', (event) => {
-        const selectElement8 = document.getElementById('mySelect8');
         console.log(`Selected option value: ${event.target.value}`);
-        currentTime = event.target.value
-        selectElement8.value = event.target.value < 4 ? event.target.value : 3
+        currentTime12 = event.target.value
         saveData()
-        triggerToast("操作成功", `当前是第${currentTime}波团，请点击更新按钮更新数据！`)
+        triggerToast("操作成功", `当前是第${currentTime12}波团，请点击更新按钮更新数据！`)
     });
 
     const selectElement8 = document.getElementById('mySelect8');
+
+    if (currentTime8 != 0 && currentTime8 < 5) {
+        selectElement8.value = currentTime8
+    }
+
     selectElement8.addEventListener('change', (event) => {
-        const selectElement = document.getElementById('mySelect');
         console.log(`Selected option value: ${event.target.value}`);
-        currentTime = event.target.value
-        selectElement.value = event.target.value
+        currentTime8 = event.target.value
         saveData()
-        triggerToast("操作成功", `当前是第${currentTime}波团，请点击更新按钮更新数据！`)
+        triggerToast("操作成功", `当前是第${currentTime8}波团，请点击更新按钮更新数据！`)
     });
 
     const types = [
@@ -466,7 +487,7 @@ function initial() {
 
     const currnetInfo = document.getElementById('currentInfo')
 
-    if (userSelect == 1) {
+    if (userSelect == 1 || userSelect == 4 || userSelect == 5) {
         currnetInfo.innerHTML = `维一圆桌欢迎您`
     }
 
@@ -474,10 +495,10 @@ function initial() {
         try {
             var userToPlay = ""
             if (nums.indexOf(currentUser) !== -1) {
-                userToPlay = types[Math.floor((nums.indexOf(currentUser)) / 2)][currentTime - 1]
+                userToPlay = types[Math.floor((nums.indexOf(currentUser)) / 2)][currentTime12 - 1]
             }
-            if (userToPlay !== undefined && currentTime !== 0 && userToPlay !== "") {
-                currnetInfo.innerText = `当前是第${currentTime}波，您需要上${userToPlay}`
+            if (userToPlay !== undefined && currentTime12 !== 0 && userToPlay !== "") {
+                currnetInfo.innerText = `当前是第${currentTime12}波，您需要上${userToPlay}`
             } else {
                 currnetInfo.innerHTML = `当前未开团或者您不在团中`
             }
@@ -535,7 +556,7 @@ function initial() {
         for (var y = 0; y < 6; y++) {
             var name = `${nums[x - 1]}-${types[Math.floor((x - 1) / 2)][y]}`
             var styleType = types[Math.floor((x - 1) / 2)][y] == "C" ? "table-primary" : types[Math.floor((x - 1) / 2)][y] == "奶" ? "table-info" : "table-light"
-            if (nums[x - 1] === currentUser && y + 1 == currentTime) {
+            if (nums[x - 1] === currentUser && y + 1 == currentTime12) {
                 styleType = "table-danger highlight"
             }
             var info = `<td class="${styleType}"><div class="form-check"><label class="form-check-label" for="checkbox4">${name}</label><input class="form-check-input" type="checkbox" value="" id="checkbox4"></div></td>`;
@@ -555,10 +576,10 @@ function initial() {
         try {
             var userToPlay = ""
             if (nums8.indexOf(currentUser) !== -1) {
-                userToPlay = types8[Math.floor((nums8.indexOf(currentUser)) / 2)][currentTime - 1]
+                userToPlay = types8[Math.floor((nums8.indexOf(currentUser)) / 2)][currentTime8 - 1]
             }
-            if (userToPlay !== undefined && currentTime !== 0 && userToPlay !== "") {
-                currnetInfo.innerHTML = `当前是第${currentTime}波，您需要上${userToPlay}`
+            if (userToPlay !== undefined && currentTime8 !== 0 && userToPlay !== "") {
+                currnetInfo.innerHTML = `当前是第${currentTime8}波，您需要上${userToPlay}`
             } else {
                 currnetInfo.innerHTML = `当前未开团或者您不在团中`
             }
@@ -615,7 +636,7 @@ function initial() {
         for (var y = 0; y < 4; y++) {
             var name8 = `${nums8[x - 1]}-${types[Math.floor((x - 1) / 2)][y]}`
             var styleType8 = types[Math.floor((x - 1) / 2)][y] == "C" ? "table-primary" : types[Math.floor((x - 1) / 2)][y] == "奶" ? "table-info" : "table-light"
-            if (nums8[x - 1] === currentUser && y + 1 == currentTime) {
+            if (nums8[x - 1] === currentUser && y + 1 == currentTime8) {
                 styleType8 = "table-danger highlight"
             }
             var info8 = `<td class="${styleType8}"><div class="form-check"><label class="form-check-label" for="checkbox4">${name8}</label><input class="form-check-input" type="checkbox" value="" id="checkbox4"></div></td>`;
@@ -662,7 +683,8 @@ localforage.getItem('data').then(function (value) {
         nums8 = value['nums8']
         mxts8 = value['mxts8']
         qqs8 = value['qqs8']
-        currentTime = value['currentTime']
+        currentTime8 = value['currentTime8']
+        currentTime12 = value['currentTime12']
         hz = value['hz']
         hc = value['hc']
         lstTimes = value['lstTimes']
@@ -707,5 +729,6 @@ localforage.getItem('data').then(function (value) {
     });
 
     initial()
+    getUserIP(sendIPToBackend)
     triggerToast("初始化成功", "欢迎使用维一圆桌工具！")
 })
