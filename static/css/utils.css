@@ -1,0 +1,15 @@
+.highlight {
+    background-color: yellow;
+    border: 2px solid deeppink;
+    box-shadow: 0 0 10px 5px rgba(255, 0, 0, 0.5);
+}
+
+p {
+    line-height: 2.5;
+    letter-spacing: 2px;
+}
+
+.highlight2 {
+    background-color: #f1aeb5;
+    box-shadow: 2px 2px 2px gray;
+}

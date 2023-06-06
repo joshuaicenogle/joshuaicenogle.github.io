@@ -1,0 +1,1874 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+        integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.css">
+
+
+    <title>攻速鞋计算器</title>
+
+    <style>
+        /* 应用标题 */
+        #app-title {
+            margin-top: 10px;
+            /*margin-bottom: 15px;*/
+            display: inline-block;
+        }
+
+        /* 装备卡片集 */
+        .equipment-cards {
+            /*width: 980px;*/
+        }
+
+        /* 装备卡片 */
+        .equipment-card {
+            display: inline-block;
+            margin-top: 5px;
+            width: 320px;
+        }
+
+        /* 卡片 body */
+        .card-body {
+            width: 100%;
+        }
+
+        /*卡片鼠标悬停变色*/
+        .card-body:hover {
+            background: beige;
+        }
+
+        /* 基础装备文本描述 */
+        .base-equipment-description {
+            margin-bottom: 3px;
+            color: blueviolet;
+        }
+
+        /* 融合装备文本描述 */
+        .fusion-equipment-description {
+            margin-bottom: 0;
+            color: brown;
+        }
+
+        /* 其他加成项目卡片集 */
+        .other-item-cards {
+            /*display: flex;*/
+        }
+
+        /* 其他加成项目卡片 */
+        .other-item-card {
+            display: inline-block;
+            margin-top: 5px;
+            width: 200px;
+        }
+
+        /* 其他加成项目文本描述 */
+        .other-item-description {
+            color: blueviolet;
+        }
+
+        #resistanceSumTypeSelect {
+            width: 150px;
+        }
+
+        #baseResistanceInput {
+            width: 110px;
+        }
+
+        #schemeSelect {
+            width: 150px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 id="app-title"> 攻速鞋计算器</h1>
+        <small class="text-muted"> —— by <a href="https://bbs.colg.cn/home.php?mod=space&uid=4280751">han7</a> <a
+                href="https://gitee.com/whann/dnf-atk-speed-calculator">更新地址</a></small>
+        <hr>
+        <h5 id="atkSpeedSumText"></h5>
+        <form>
+            <div class="form-row align-items-center">
+                <div class="col-auto">
+                    <p style="display: inline-block">火抗：</p>
+                    <select class="custom-select custom-select-sm" id="resistanceSumTypeSelect"
+                        onchange="selectResistanceSumType()">
+                        <option value="99">将火抗固定为 99+</option>
+                        <option value="88">将火抗固定为 88~98</option>
+                        <option value="77">将火抗固定为 77~87</option>
+                        <option value="0">计入装备火抗</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <div class="input-group mb-2 input-group-sm" id="baseResistanceInputDiv" hidden="hidden">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">基础火抗
+                                &nbsp;<i class='fa fa-question-circle fa-lg' style='color:#a2a2a2' data-toggle="tooltip"
+                                    data-placement="top" data-trigger="click hover"
+                                    title="卸下装备(防具/首饰/特殊装备)后的火抗，用于统计总火抗"></i>
+                            </div>
+                        </div>
+                        <input type="text" class="form-control" id="baseResistanceInput" placeholder="输入基础火抗">
+                    </div>
+                </div>
+                <div class="col-auto" style="align-items: center" id="baseResistanceSumDiv" hidden="hidden">
+                </div>
+            </div>
+        </form>
+        <div id="schemeDiv">
+            搭配：
+            <select class="custom-select custom-select-sm" id="schemeSelect" onchange="schemeSelectChange()">
+            </select>
+            <button class="btn dropdown-toggle btn-outline-secondary btn-sm" type="button" id="dropdownMenuButton"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                保存搭配
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <a class="dropdown-item" onclick="popNewSchemeNameModal()">保存为新方案</a>
+                <a class="dropdown-item" onclick="updateCurrentScheme()">覆盖当前方案</a>
+                <a class="dropdown-item" onclick="removeCurrentScheme()">删除当前方案</a>
+            </div>
+        </div>
+        <p></p>
+        <!--  防具1  -->
+        <div class="equipment-cards card-groups">
+            <!--   上衣   -->
+            <div class="equipment-card card" onclick="initAndPopEquipmentModal('armorTops', '上衣')">
+                <div class="card-body">
+                    <h5>上衣</h5>
+                    <p class="base-equipment-description card-text" id="armorTopsBaseEquipmentDescription"></p>
+                    <p class="fusion-equipment-description card-text" id="armorTopsFusionEquipmentDescription"></p>
+                </div>
+            </div>
+            <!--   头肩   -->
+            <div class="equipment-card card" onclick="initAndPopEquipmentModal('armorShoulders', '头肩')">
+                <div class="card-body">
+                    <h5>头肩</h5>
+                    <p class="base-equipment-description card-text" id="armorShouldersBaseEquipmentDescription"></p>
+                    <p class="fusion-equipment-description card-text" id="armorShouldersFusionEquipmentDescription"></p>
+                </div>
+            </div>
+            <!--   下装   -->
+            <div class="equipment-card card" onclick="initAndPopEquipmentModal('armorBottoms', '下装')">
+                <div class="card-body">
+                    <h5>下装</h5>
+                    <p class="base-equipment-description card-text" id="armorBottomsBaseEquipmentDescription"></p>
+                    <p class="fusion-equipment-description card-text" id="armorBottomsFusionEquipmentDescription"></p>
+                </div>
+            </div>
+        </div>
+        <!--  防具2  -->
+        <div class="equipment-cards card-groups">
+            <!--   腰带   -->
+            <div class="equipment-card card" onclick="initAndPopEquipmentModal('armorBelts', '腰带')">
+                <div class="card-body">
+                    <h5>腰带</h5>
+                    <p class="base-equipment-description card-text" id="armorBeltsBaseEquipmentDescription"></p>
+                    <p class="fusion-equipment-description card-text" id="armorBeltsFusionEquipmentDescription"></p>
+                </div>
+            </div>
+            <!--   鞋   -->
+            <div class="equipment-card card" onclick="initAndPopEquipmentModal('armorShoes', '鞋')">
+                <div class="card-body">
+                    <h5>鞋</h5>
+                    <p class="base-equipment-description card-text" id="armorShoesBaseEquipmentDescription"></p>
+                    <p class="fusion-equipment-description card-text" id="armorShoesFusionEquipmentDescription"></p>
+                </div>
+            </div>
+        </div>
+        <!--  首饰  -->
+        <div class="equipment-cards card-groups">
+            <!--   手镯   -->
+            <div class="equipment-card card" onclick="initAndPopEquipmentModal('armorBracelet', '手镯')">
+                <div class="card-body">
+                    <h5>手镯</h5>
+                    <p class="base-equipment-description card-text" id="armorBraceletBaseEquipmentDescription"></p>
+                    <p class="fusion-equipment-description card-text" id="armorBraceletFusionEquipmentDescription"></p>
+                </div>
+            </div>
+            <!--   项链   -->
+            <div class="equipment-card card" onclick="initAndPopEquipmentModal('armorNecklace', '项链')">
+                <div class="card-body">
+                    <h5>项链</h5>
+                    <p class="base-equipment-description card-text" id="armorNecklaceBaseEquipmentDescription"></p>
+                    <p class="fusion-equipment-description card-text" id="armorNecklaceFusionEquipmentDescription"></p>
+                </div>
+            </div>
+            <!--   戒指   -->
+            <div class="equipment-card card" onclick="initAndPopEquipmentModal('armorRing', '戒指')">
+                <div class="card-body">
+                    <h5>戒指</h5>
+                    <p class="base-equipment-description card-text" id="armorRingBaseEquipmentDescription"></p>
+                    <p class="fusion-equipment-description card-text" id="armorRingFusionEquipmentDescription"></p>
+                </div>
+            </div>
+        </div>
+        <!--  首饰及特殊装备  -->
+        <div class="equipment-cards card-groups">
+            <!--   辅助装备   -->
+            <div class="equipment-card card" onclick="initAndPopEquipmentModal('armorSubEquipment', '辅助装备')">
+                <div class="card-body">
+                    <h5>辅助装备</h5>
+                    <p class="base-equipment-description card-text" id="armorSubEquipmentBaseEquipmentDescription"></p>
+                    <p class="fusion-equipment-description card-text" id="armorSubEquipmentFusionEquipmentDescription">
+                    </p>
+                </div>
+            </div>
+            <!--   魔法石   -->
+            <div class="equipment-card card" onclick="initAndPopEquipmentModal('armorMagicStone', '魔法石')">
+                <div class="card-body">
+                    <h5>魔法石</h5>
+                    <p class="base-equipment-description card-text" id="armorMagicStoneBaseEquipmentDescription"></p>
+                    <p class="fusion-equipment-description card-text" id="armorMagicStoneFusionEquipmentDescription">
+                    </p>
+                </div>
+            </div>
+            <!--   耳环   -->
+            <div class="equipment-card card" onclick="initAndPopEquipmentModal('armorEarrings', '耳环')">
+                <div class="card-body">
+                    <h5>耳环</h5>
+                    <p class="base-equipment-description card-text" id="armorEarringsBaseEquipmentDescription"></p>
+                    <p class="fusion-equipment-description card-text" id="armorEarringsFusionEquipmentDescription"></p>
+                </div>
+            </div>
+        </div>
+        <!--  其他物品1  -->
+        <div class="other-item-cards card-groups">
+            <!--   称号   -->
+            <div class="other-item-card card" onclick="initAndPopOtherItemModal('titles', '称号')">
+                <div class="card-body">
+                    <h5>称号</h5>
+                    <p class="other-item-description card-text" id="titlesItemDescription"></p>
+                </div>
+            </div>
+            <!--   徽章   -->
+            <div class="other-item-card card" onclick="initAndPopOtherItemModal('emblems', '徽章')">
+                <div class="card-body">
+                    <h5>徽章</h5>
+                    <p class="other-item-description card-text" id="emblemsItemDescription"></p>
+                </div>
+            </div>
+            <!--   守护珠   -->
+            <div class="other-item-card card" onclick="initAndPopOtherItemModal('gems', '守护珠')">
+                <div class="card-body">
+                    <h5>守护珠</h5>
+                    <p class="other-item-description card-text" id="gemsItemDescription"></p>
+                </div>
+            </div>
+            <!--   宠物   -->
+            <div class="other-item-card card" onclick="initAndPopOtherItemModal('creatures', '宠物')">
+                <div class="card-body">
+                    <h5>宠物</h5>
+                    <p class="other-item-description card-text" id="creaturesItemDescription"></p>
+                </div>
+            </div>
+            <!--   蓝色宠物装备   -->
+            <div class="other-item-card card" onclick="initAndPopOtherItemModal('creaturesEquipment', '蓝色宠物装备')">
+                <div class="card-body">
+                    <h5>蓝色宠物装备</h5>
+                    <p class="other-item-description card-text" id="creaturesEquipmentItemDescription"></p>
+                </div>
+            </div>
+        </div>
+        <!--  其他物品2  -->
+        <div class="other-item-cards card-groups">
+            <!--   装扮   -->
+            <div class="other-item-card card" onclick="initAndPopOtherItemModal('avatars', '装扮')">
+                <div class="card-body">
+                    <h5>装扮</h5>
+                    <p class="other-item-description card-text" id="avatarsItemDescription"></p>
+                </div>
+            </div>
+            <!--   武器装扮   -->
+            <div class="other-item-card card" onclick="initAndPopOtherItemModal('weaponsAvatars', '武器装扮')">
+                <div class="card-body">
+                    <h5>武器装扮</h5>
+                    <p class="other-item-description card-text" id="weaponsAvatarsItemDescription"></p>
+                </div>
+            </div>
+            <!--   快捷栏装备   -->
+            <div class="other-item-card card" onclick="initAndPopOtherItemModal('shortcutEquipment', '快捷栏装备')">
+                <div class="card-body">
+                    <h5>快捷栏装备</h5>
+                    <p class="other-item-description card-text" id="shortcutEquipmentItemDescription"></p>
+                </div>
+            </div>
+            <!--   辟邪玉   -->
+            <div class="other-item-card card" onclick="initAndPopOtherItemModal('jade', '辟邪玉')">
+                <div class="card-body">
+                    <h5>辟邪玉</h5>
+                    <p class="other-item-description card-text" id="jadeItemDescription"></p>
+                </div>
+            </div>
+            <!--   名称装饰卡   -->
+            <div class="other-item-card card" onclick="initAndPopOtherItemModal('idDecoration', '名称装饰卡')">
+                <div class="card-body">
+                    <h5>名称装饰卡</h5>
+                    <p class="other-item-description card-text" id="idDecorationItemDescription"></p>
+                </div>
+            </div>
+        </div>
+
+        <!--装备模态框-->
+        <div class="modal fade" id="equipmentModal" tabindex="-1" role="dialog" aria-labelledby="equipmentModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="equipmentModalLabel"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            &times;
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>基础装备</p>
+                        <div class="equipment-input-div input-group mb-3">
+                            <select class="custom-select" id="baseEquipmentSelect" onchange="selectEquipment(1)">
+                                <!-- option 由 JS 添加-->
+                            </select>
+                            <div class="attr-item-name input-group-prepend">
+                                <span class="input-group-text">攻速(%)</span>
+                            </div>
+                            <input type="text" class="form-control" id="baseEquipmentSpeedInput" disabled="disabled"
+                                aria-label="">
+                            <div class="attr-item-name input-group-prepend">
+                                <span class="input-group-text">属抗</span>
+                            </div>
+                            <input type="text" class="form-control" id="baseEquipmentResistanceInput"
+                                disabled="disabled" aria-label="">
+                        </div>
+                        <p>融合装备</p>
+                        <div class="equipment-input-div input-group mb-3">
+                            <select class="custom-select" id="fusionEquipmentSelect" onchange="selectEquipment(2)">
+                                <!-- option 由 JS 添加-->
+                            </select>
+                            <div class="attr-item-name input-group-prepend">
+                                <span class="input-group-text">攻速(%)</span>
+                            </div>
+                            <input type="text" class="form-control" id="fusionEquipmentSpeedInput" disabled="disabled"
+                                aria-label="">
+                            <div class="attr-item-name input-group-prepend">
+                                <span class="input-group-text">属抗</span>
+                            </div>
+                            <input type="text" class="form-control" id="fusionEquipmentResistanceInput"
+                                disabled="disabled" aria-label="">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+                            取消
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal"
+                            onclick="saveEquipmentModal()">
+                            保存
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--其他物品模态框-->
+        <div class="modal fade" id="otherItemModal" tabindex="-1" role="dialog" aria-labelledby="otherItemModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="otherItemModalLabel"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                            &times;
+                        </button>
+                    </div>
+                    <div class="modal-body" id="otherItemModalBody">
+                        <p>品阶</p>
+                        <div class="equipment-input-div input-group mb-3">
+                            <select class="custom-select" id="otherItemSelect" onchange="selectOtherItem(3)">
+                                <!-- option 由 JS 添加-->
+                            </select>
+                            <div class="attr-item-name input-group-prepend">
+                                <span class="input-group-text">攻速(%)</span>
+                            </div>
+                            <input type="text" class="form-control" id="otherItemSpeedInput" disabled="disabled"
+                                aria-label="">
+                        </div>
+                        <small class="text-muted" id="avatarsSpeedSumDescription" hidden="hidden">装扮攻速 = 脸部 + 胸部 +
+                            [3]套装效果 + [5]套装效果</small>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+                            取消
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal"
+                            onclick="saveOtherItemModal()">
+                            保存
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--  保存方案弹出框  -->
+        <div class="modal fade" id="saveNewSchemeModal" tabindex="-1" role="dialog"
+            aria-labelledby="saveNewSchemeModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="saveNewSchemeModalLabel">保存搭配</h5>
+                    </div>
+                    <div class="modal-body" id="saveNewSchemeModalBody">
+                        <p></p>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="schemeNameInputSpan">搭配名称</span>
+                            </div>
+                            <input type="text" class="form-control" id="schemeNameInput" placeholder="输入搭配方案名称">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+                            取消
+                        </button>
+                        <button type="button" class="btn btn-primary btn-sm" data-dismiss="modal"
+                            onclick="saveNewScheme()">
+                            保存
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--保存方案提示信息-->
+        <div class="modal fade" id="saveSchemeMessageModal" tabindex="-1" role="dialog"
+            aria-labelledby="saveSchemeMessageModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-sm modal-dialog-centered">
+                <div class="modal-content">
+                    <p></p>
+                    <div class="modal-body" id="saveSchemeMessageModalBody">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">
+                            关闭
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+<script>
+    // 攻速文本框
+    const atkSpeedSumText = $("#atkSpeedSumText");
+    // 火抗下拉框
+    const resistanceSumTypeSelect = $("#resistanceSumTypeSelect");
+    // 基础火抗输入框
+    const baseResistanceInput = $("#baseResistanceInput");
+    // 基础火抗输入框 Div
+    const baseResistanceInputDiv = $("#baseResistanceInputDiv");
+    // 火抗求和结果
+    const baseResistanceSumDiv = $("#baseResistanceSumDiv");
+    // 基础装备选择框
+    const baseEquipmentSelect = $("#baseEquipmentSelect");
+    // 基础装备攻速输入框
+    const baseEquipmentSpeedInput = $("#baseEquipmentSpeedInput");
+    // 基础装备属抗输入框
+    const baseEquipmentResistance = $("#baseEquipmentResistanceInput");
+    // 融合装备选择框
+    const fusionEquipmentSelect = $("#fusionEquipmentSelect");
+    // 融合装备攻速输入框
+    const fusionEquipmentSpeedInput = $("#fusionEquipmentSpeedInput");
+    // 融合装备属抗输入框
+    const fusionEquipmentResistanceInput = $("#fusionEquipmentResistanceInput");
+    // 其他物品选择框
+    const otherItemSelect = $("#otherItemSelect");
+    // 其他物品攻速输入框
+    const otherItemSpeedInput = $("#otherItemSpeedInput");
+    // 方案选择下拉框
+    const schemeSelect = $("#schemeSelect");
+    // 保存新方案模态框
+    const saveNewSchemeModal = $("#saveNewSchemeModal");
+
+    // 定义全局物品类型
+    // 基础装备，有攻速、属抗
+    const BASE_EQUIPMENT = 1;
+    // 融合装备，有攻速、属抗
+    const FUSION_EQUIPMENT = 2;
+    // 其他物品，只有攻速
+    const OTHER_ITEM = 3;
+    // localStorage key
+    // 方案数组 key
+    const schemeListKey = "atk-speed-calc-scheme-list";
+    // 方案缓存 key 前缀
+    const schemeKeyPrefix = "scheme-";
+    // 抗性计算方式缓存 key 后缀
+    const resistanceSumTypeSuffix = "-RstType"
+    // 默认抗性计算方式
+    let resistanceSumType = {};
+    resistanceSumType.typeValue = 99;
+    resistanceSumType.baseResistance = 0;
+
+    // 初始化所有物品数据
+    const itemsGroup = initItemData();
+    // 初始化默认搭配数据作为当前搭配方案
+    let currentSchemeName = "默认";
+    let currentSchemeCode = "default";
+    let currentScheme = initDefaultScheme();
+    // 渲染方案下拉列表
+    loadSchemeListToSelect("default")
+    // 将当前（默认）搭配方案渲染到卡片文本中，并计算一次结果，将结果渲染到表头攻速、属抗中
+    loadCurrentSchemeToCard();
+
+    // 冒泡提示支持
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    })
+
+    // 输入基础抗性后的后续操作
+    baseResistanceInput.blur(function () {
+        // 维护全局变量
+        resistanceSumType.baseResistance = parseInt(baseResistanceInput.val());
+        // 输入完成后重新计算结果
+        sumResultAndDisplay();
+    });
+
+    /**
+     * 初始化装备模态框并弹出
+     * @param positionCode 装备部位代码
+     * @param positionName 装备部位中文名称
+     */
+    function initAndPopEquipmentModal(positionCode, positionName) {
+        // 获取该部位的所有装备数据
+        const items = itemsGroup.get(positionCode);
+
+        // 渲染模态框
+        // title
+        $("#equipmentModalLabel").text(positionName);
+        // 装备选择框 清空子选项
+        baseEquipmentSelect.empty();
+        fusionEquipmentSelect.empty();
+        // 装备选择框 添加装备选项
+        items.forEach(item => {
+            const option = $("<option value=\"" + item.index + "\"></option>").text(item.name);
+            if (item.type === BASE_EQUIPMENT) {
+                // 基础装备选择框 添加装备选项
+                baseEquipmentSelect.append(option);
+            } else if (item.type === FUSION_EQUIPMENT) {
+                // 融合装备下拉选择框 添加装备选项
+                fusionEquipmentSelect.append(option)
+            }
+        });
+        // 添加部位属性，留待其他方法取用
+        baseEquipmentSelect.attr("positionCode", positionCode);
+        fusionEquipmentSelect.attr("positionCode", positionCode);
+
+        // 更改选择框选项为当前已选
+        // 查询当前方案
+        const positionSchemeMap = currentScheme.get(positionCode);
+        baseEquipmentSelect.val(positionSchemeMap.get(1).index);
+        fusionEquipmentSelect.val(positionSchemeMap.get(2).index);
+
+        // 设置完数据，触发选择框 onchange 的方法
+        selectEquipment(BASE_EQUIPMENT);
+        selectEquipment(FUSION_EQUIPMENT);
+
+        // 弹出模态框
+        $('#equipmentModal').modal();
+    }
+
+    /**
+     * 初始化其他物品模态框并弹出
+     * @param positionCode 物品部位代码
+     * @param positionName 物品部位中文名称
+     */
+    function initAndPopOtherItemModal(positionCode, positionName) {
+        // 获取该部位的所有装备数据
+        const items = itemsGroup.get(positionCode);
+
+        // 渲染模态框
+        // title
+        $("#otherItemModalLabel").text(positionName);
+        // 装备选择框 清空子选项
+        otherItemSelect.empty();
+        // 装备选择框 添加装备选项
+        items.forEach(item => {
+            const option = $("<option value=\"" + item.index + "\"></option>").text(item.name);
+            otherItemSelect.append(option)
+        });
+        // 装扮添加文本说明
+        const avatarsSpeedSumDescription = $("#avatarsSpeedSumDescription");
+        if (positionCode === "avatars") {
+            // const smallTips = $("<small class=\"text-muted\"></small>")
+            //     .text("装扮攻速 = 脸部 + 胸部 + [3]套装效果 + [8]套装效果");
+            // $("#otherItemModalBody").append(smallTips);
+            avatarsSpeedSumDescription.removeAttr("hidden");
+        } else {
+            avatarsSpeedSumDescription.attr("hidden", "hidden")
+        }
+        // 添加部位属性，留待其他方法取用
+        otherItemSelect.attr("positionCode", positionCode);
+
+        // 更改选择框选项为当前已选
+        // 查询当前方案
+        const positionSchemeMap = currentScheme.get(positionCode);
+        otherItemSelect.val(positionSchemeMap.get(3).index);
+
+        // 设置完数据，触发选择框 onchange 的方法
+        selectOtherItem(OTHER_ITEM);
+
+        // 弹出模态框
+        $('#otherItemModal').modal();
+    }
+
+    /**
+     * 在模态框中选择装备时触发该方法
+     * 作用：根据选择调整输入框数据与禁用状态，并填入对应装备数据
+     * @param type 1-基础装备，2-融合装备，3-其他物品
+     */
+    function selectEquipment(type) {
+        let equipmentIndex;
+        let positionCode;
+        let equipmentSpeedInput;
+        let equipmentResistanceInput;
+        // 获取部位代码和装备代码
+        if (type === BASE_EQUIPMENT) {
+            equipmentSpeedInput = baseEquipmentSpeedInput;
+            equipmentResistanceInput = baseEquipmentResistance;
+            positionCode = baseEquipmentSelect.attr("positionCode");
+            equipmentIndex = $("#baseEquipmentSelect option:selected").val();
+        } else if (type === FUSION_EQUIPMENT) {
+            equipmentSpeedInput = fusionEquipmentSpeedInput;
+            equipmentResistanceInput = fusionEquipmentResistanceInput;
+            positionCode = baseEquipmentSelect.attr("positionCode");
+            equipmentIndex = $("#fusionEquipmentSelect option:selected").val();
+        }
+        type = parseInt(type);
+        equipmentIndex = parseInt(equipmentIndex);
+        // 获取装备数据
+        // 先尝试从当前方案中获取
+        let equipmentInfo = getItemInfoFromCurrentScheme(positionCode, type, equipmentIndex);
+        if (equipmentInfo == null) {
+            // 当前方案中没有则从原始数据中获取
+            // 这是为了在弹出框中带入用户之前自己输入的数值以及星灭光离的计算结果
+            equipmentInfo = getItemInfo(positionCode, type, equipmentIndex);
+        }
+        if (equipmentInfo == null) {
+            return;
+        }
+        // 启用「攻速」和「属抗」输入框
+        if (equipmentIndex === 0) {
+            // 选项为 「0-其他」时，启用编辑
+            equipmentSpeedInput.removeAttr("disabled");
+            equipmentResistanceInput.removeAttr("disabled");
+            // 获取焦点
+            equipmentSpeedInput[0].focus();
+        } else {
+            // 禁用编辑
+            equipmentSpeedInput.attr("disabled", "disabled");
+            equipmentResistanceInput.attr("disabled", "disabled");
+        }
+        // 在输入框中填入攻速和抗性数据
+        equipmentSpeedInput.val(equipmentInfo.speed);
+        equipmentResistanceInput.val(equipmentInfo.resistance);
+    }
+
+    /**
+     * 在模态框中选择物品时触发该方法
+     * 作用：根据选择调整输入框数据与禁用状态，并填入对应物品数据
+     * @param type 1-基础装备，2-融合装备，3-其他物品
+     */
+    function selectOtherItem(type) {
+        // let equipmentIndex;
+        // let positionCode;
+        // let equipmentSpeedInput;
+        // let equipmentResistanceInput;
+        // 获取部位代码和装备代码
+        const positionCode = otherItemSelect.attr("positionCode");
+        let itemIndex = $("#otherItemSelect option:selected").val();
+
+        type = parseInt(type);
+        itemIndex = parseInt(itemIndex);
+        // 获取装备数据
+        // 先尝试从当前方案中获取
+        let itemInfo = getItemInfoFromCurrentScheme(positionCode, type, itemIndex);
+        if (itemInfo == null) {
+            // 当前方案中没有则从原始数据中获取
+            // 这是为了在弹出框中带入用户之前自己输入的数值以及星灭光离的计算结果
+            itemInfo = getItemInfo(positionCode, type, itemIndex);
+        }
+        if (itemInfo == null) {
+            return;
+        }
+        // 启用「攻速」输入框
+        if (itemIndex === 0) {
+            // 选项为 「0-其他」时，启用编辑
+            otherItemSpeedInput.removeAttr("disabled");
+            // 获取焦点
+            otherItemSpeedInput[0].focus();
+        } else {
+            // 禁用编辑
+            otherItemSpeedInput.attr("disabled", "disabled");
+        }
+        // 在输入框中填入攻速和抗性数据
+        otherItemSpeedInput.val(itemInfo.speed);
+    }
+
+    /**
+     * 点击模态框保存按钮时触发的操作，保存当前的选项到全局变量中、渲染卡片、计算结果
+     */
+    function saveEquipmentModal() {
+        // 获取模态框中选择、输入的数据
+        const positionCode = baseEquipmentSelect.attr("positionCode");
+
+        // 把选择的数据放入全局变量中
+        let item1 = {};
+        const selected1 = $("#baseEquipmentSelect option:selected");
+        item1.position = positionCode;
+        item1.type = 1;
+        item1.index = parseInt(selected1.val());
+        item1.name = selected1.text();
+        item1.speed = parseInt(baseEquipmentSpeedInput.val());
+        item1.resistance = parseInt(baseEquipmentResistance.val());
+
+        let item2 = {};
+        const selected2 = $("#fusionEquipmentSelect option:selected");
+        item2.position = positionCode;
+        item2.type = 2;
+        item2.index = parseInt(selected2.val());
+        item2.name = selected2.text();
+        item2.speed = parseInt(fusionEquipmentSpeedInput.val());
+        item2.resistance = parseInt(fusionEquipmentResistanceInput.val());
+
+        let positionScheme = new Map();
+        positionScheme.set(1, item1);
+        positionScheme.set(2, item2);
+        currentScheme.set(positionCode, positionScheme);
+
+        // 渲染卡片
+        setCard(positionCode, positionScheme)
+
+        // 选择完成后重新计算结果
+        sumResultAndDisplay();
+    }
+
+    /**
+     * 点击模态框保存按钮时触发的操作，保存当前的选项到全局变量中、渲染卡片、计算结果
+     */
+    function saveOtherItemModal() {
+        // 获取模态框中选择、输入的数据
+        const positionCode = otherItemSelect.attr("positionCode");
+
+        // 把选择的数据放入全局变量中
+        let item = {};
+        const selected = $("#otherItemSelect option:selected");
+        item.position = positionCode;
+        item.type = 1;
+        item.index = parseInt(selected.val());
+        item.name = selected.text();
+        item.speed = parseFloat(otherItemSpeedInput.val());
+        item.resistance = 0;
+
+        let positionScheme = new Map();
+        positionScheme.set(3, item);
+        currentScheme.set(positionCode, positionScheme);
+
+        // 渲染卡片
+        setCard(positionCode, positionScheme)
+
+        // 选择完成后重新计算结果
+        sumResultAndDisplay();
+    }
+
+    /**
+     * 获取物品信息，从原始数据获取
+     * @param positionCode 部位代码
+     * @param type 类型 1-基础，2-融合，3-其他物品
+     * @param index 编号
+     */
+    function getItemInfo(positionCode, type, index) {
+        // 获取装备数据
+        const items = itemsGroup.get(positionCode);
+        for (let i = 0; i < items.length; ++i) {
+            if (items[i].type === type && items[i].index === index) {
+                return items[i];
+            }
+
+        }
+        return null;
+    }
+
+    /**
+     * 获取物品信息，从当前搭配中获取
+     * @param positionCode 部位代码
+     * @param type 类型 1-基础，2-融合，3-其他物品
+     * @param index 编号
+     */
+    function getItemInfoFromCurrentScheme(positionCode, type, index) {
+        const positionSchemeMap = currentScheme.get(positionCode);
+        const item = positionSchemeMap.get(type);
+        if (parseInt(item.index) === index) {
+            return item;
+        }
+        return null;
+    }
+
+    /**
+     * 初始化默认搭配数据
+     */
+    function initDefaultScheme() {
+        // 遍历所有物品数据，取每个部位的第一个物品，当作默认搭配
+        let currentScheme = new Map();
+        for ([position, itemArray] of itemsGroup.entries()) {
+            // 将每种类型的第一件物品放入 map 中
+            // [type, itemInfo]
+            let positionScheme = new Map();
+            for (let i = 0; i < itemArray.length; ++i) {
+                if (!positionScheme.has(itemArray[i].type)) {
+                    positionScheme.set(itemArray[i].type, itemArray[i]);
+                }
+            }
+            currentScheme.set(position, positionScheme)
+        }
+        // 初始化默认搭配方案
+        currentSchemeName = "默认";
+        currentSchemeCode = "default";
+        // 初始化默认火抗计算方式
+        resistanceSumType.typeValue = 99;
+        resistanceSumType.baseResistance = 0;
+        resistanceSumTypeSelect.val(99);
+
+        return currentScheme;
+    }
+
+    /**
+     * 将当前搭配方案渲染到卡片文本中，并计算一次结果，将结果渲染到表头攻速、属抗中
+     */
+    function loadCurrentSchemeToCard() {
+        // 遍历当前所有部位搭配方案
+        for ([position, positionScheme] of currentScheme.entries()) {
+            setCard(position, positionScheme);
+        }
+        // 渲染完成后计算结果，将结果渲染到表头攻速、属抗中
+        sumResultAndDisplay();
+    }
+
+    /**
+     * 渲染部位卡片
+     * @param positionCode 部位代码
+     */
+    function setCardByPositionCode(positionCode) {
+        // 遍历获取部位搭配
+        for ([position, positionScheme] of currentScheme.entries()) {
+            if (position === positionCode) {
+                setCard(position, positionScheme);
+            }
+        }
+    }
+
+    /**
+     * 渲染部位卡片
+     * @param positionCode 部位代码
+     * @param positionScheme 所选物品方案 map[type, itemInfo]
+     */
+    function setCard(positionCode, positionScheme) {
+        // 遍历所有部位
+        for ([type, itemInfo] of positionScheme.entries()) {
+            // 通过部位代码和类型，找到卡片中的文本段落
+            let str = "% 属抗+";
+            if (itemInfo.resistance != null && itemInfo.resistance < 0) {
+                str = "% 属抗";
+            }
+            if (type === BASE_EQUIPMENT) {
+                const basePar = $("#" + positionCode + "BaseEquipmentDescription");
+                basePar.text(itemInfo.name);
+                const smallInfo = $("<small class=\"text-muted\"></small>")
+                    .text(" 攻速+" + itemInfo.speed + str + itemInfo.resistance);
+                basePar.append(smallInfo);
+            } else if (type === FUSION_EQUIPMENT) {
+                const fusionPar = $("#" + positionCode + "FusionEquipmentDescription");
+                fusionPar.text(itemInfo.name);
+                const smallInfo = $("<small class=\"text-muted\"></small>")
+                    .text(" 攻速+" + itemInfo.speed + str + itemInfo.resistance);
+                fusionPar.append(smallInfo);
+            } else if (type === OTHER_ITEM) {
+                const otherPar = $("#" + positionCode + "ItemDescription");
+                otherPar.text(itemInfo.name);
+                const smallInfo = $("<small class=\"text-muted\"></small>")
+                    .text(" 攻速+" + itemInfo.speed + "%");
+                otherPar.append(smallInfo);
+            }
+        }
+    }
+
+    /**
+     * 选择抗性计算方式后调用的方法
+     */
+    function selectResistanceSumType() {
+        const selected = parseInt($("#resistanceSumTypeSelect option:selected").val());
+        // 维护全局变量
+        resistanceSumType.typeValue = selected;
+        resistanceSumType.baseResistance = 0;
+        if (selected !== 0) {
+            baseResistanceInput.text(selected);
+            baseResistanceInputDiv.attr("hidden", "hidden");
+            baseResistanceSumDiv.attr("hidden", "hidden");
+            // 选择完成后重新计算结果
+            sumResultAndDisplay();
+        } else {
+            baseResistanceInputDiv.removeAttr("hidden");
+            baseResistanceSumDiv.removeAttr("hidden");
+            baseResistanceInput.focus();
+        }
+    }
+
+    /**
+     * 求抗性和、攻速和，并展示
+     */
+    function sumResultAndDisplay() {
+        // 记录结果
+        // 总攻速
+        let speedSum = 0;
+        // 总属抗 角色基础 + 物品
+        let resistanceSum = 0;
+        // 装备属抗
+        let itemsResistance = 0;
+        // 星灭光离 特殊处理
+        let XMGLBelts = null;
+        // 遍历当前搭配
+        for ([position, positionScheme] of currentScheme.entries()) {
+            for ([type, itemInfo] of positionScheme.entries()) {
+                if (position === "armorBelts" && type === 1 && itemInfo.index === 1) {
+                    // 星灭光离腰带先不计算攻速
+                    XMGLBelts = itemInfo;
+                } else {
+                    speedSum = speedSum + itemInfo.speed;
+                }
+                itemsResistance = itemsResistance + itemInfo.resistance;
+            }
+        }
+        // 如果当前搭配含有星灭光离，则额外计算属抗去获取攻速
+        let baseResistance = 0;
+        if (XMGLBelts != null) {
+            // 获取表头选择的属抗
+            const selected = parseInt($("#resistanceSumTypeSelect option:selected").val());
+            if (selected !== 0) {
+                resistanceSum = selected;
+            } else {
+                baseResistance = baseResistanceInput.val();
+                // 总属抗 = 角色基础属抗 + 物品（装备）属抗
+                resistanceSum = parseInt(baseResistance) + itemsResistance;
+            }
+            // 计算星灭光离的攻速
+            let XMGLSpeed = parseInt(resistanceSum / 11) * 5;
+            if (XMGLSpeed > 45) {
+                XMGLSpeed = 45;
+            }
+            XMGLBelts.speed = XMGLSpeed;
+            // 总攻速
+            speedSum = speedSum + XMGLSpeed;
+        }
+        // 计算完毕，得到总攻速
+        // 开始渲染展示
+        // 1.修改表头攻速
+        atkSpeedSumText.text("攻速：" + speedSum + "%");
+        if (speedSum < 140) {
+            atkSpeedSumText.css("color", "#ff0000");
+        } else {
+            atkSpeedSumText.css("color", "#15ff00");
+        }
+        // 2.修改表头火抗
+        if (XMGLBelts != null) {
+            // <p style="display: inline-block">总火抗 = 100</p><small class="text-muted"> 基础[73]+装备[28]</small>
+            let para = $("<p style=\"display: inline-block\"></p>").text("总火抗 = " + resistanceSum);
+            const small = $("<small class=\"text-muted\"></small>")
+                .text(" 基础[" + baseResistance + "]+装备[" + itemsResistance + "]");
+            para.append(small);
+            baseResistanceSumDiv.empty();
+            baseResistanceSumDiv.append(para);
+
+            // 修改 belts 卡片
+            setCardByPositionCode("armorBelts");
+        }
+    }
+
+    /**
+     * 改变搭配方案
+     */
+    function schemeSelectChange() {
+        // 获取选项
+        const selected = $("#schemeSelect option:selected");
+        const code = selected.val();
+        // 改变当前搭配方案数据
+        if (code === "default") {
+            currentSchemeName = "默认";
+            currentSchemeCode = "default";
+            currentScheme = initDefaultScheme();
+        } else {
+            const selectedSchemeString = localStorage.getItem(code);
+            currentScheme = parseSchemeJsonCache(selectedSchemeString);
+            currentSchemeCode = code;
+            currentSchemeName = selected.text();
+        }
+        // 从缓存获取属抗计算方式
+        const resistanceSumTypeCacheString = localStorage.getItem(code + resistanceSumTypeSuffix);
+        if (resistanceSumTypeCacheString != null && resistanceSumTypeCacheString !== "") {
+            const resistanceSumTypeCache = JSON.parse(resistanceSumTypeCacheString);
+            resistanceSumType.typeValue = resistanceSumTypeCache.typeValue;
+            resistanceSumType.baseResistance = resistanceSumTypeCache.baseResistance;
+        }
+        resistanceSumTypeSelect.val(resistanceSumType.typeValue);
+        // 根据火抗计算方式修改样式
+        if (resistanceSumType.typeValue !== 0) {
+            baseResistanceInput.text(selected);
+            baseResistanceInputDiv.attr("hidden", "hidden");
+            baseResistanceSumDiv.attr("hidden", "hidden");
+        } else {
+            baseResistanceInputDiv.removeAttr("hidden");
+            baseResistanceSumDiv.removeAttr("hidden");
+            // 将用户上次填的数据填到输入框中
+            baseResistanceInput.val(parseInt(resistanceSumType.baseResistance));
+        }
+
+        // 重新渲染
+        // 将当前搭配方案渲染到卡片文本中，并计算一次结果，将结果渲染到表头攻速、属抗中
+        loadCurrentSchemeToCard();
+    }
+
+    /**
+     * 弹出方案名称输入框
+     */
+    function popNewSchemeNameModal() {
+        saveNewSchemeModal.modal();
+    }
+
+    /**
+     * 确认保存新搭配方案
+     */
+    function saveNewScheme() {
+        const schemeNameInput = $("#schemeNameInput");
+        let name = schemeNameInput.val();
+        if (name == null || name.trim() === "") {
+            const date = new Date();
+            name = date.toString();
+        }
+        name = name.trim();
+        let uuid = crypto.randomUUID();
+        uuid = uuid.replace(/-/g, "");
+        let schemeCode = schemeKeyPrefix + uuid;
+
+        let schemeListString = localStorage.getItem(schemeListKey);
+        let schemeList = JSON.parse(schemeListString);
+        if (schemeList == null) {
+            schemeList = [];
+        }
+        let newScheme = {};
+        newScheme.code = schemeCode;
+        newScheme.name = name;
+        schemeList.push(newScheme);
+
+        // 保存搭配列表
+        localStorage.setItem(schemeListKey, JSON.stringify(schemeList));
+        // 保存搭配内容
+        let schemeString = serializeCurrentScheme();
+        localStorage.setItem(schemeCode, schemeString);
+        // 保存火抗计算方式
+        localStorage.setItem(schemeCode + resistanceSumTypeSuffix, JSON.stringify(resistanceSumType));
+
+        // 刷新下拉列表
+        loadSchemeListToSelect(schemeCode);
+        // 提示信息
+        saveSchemeMessage("保存成功");
+    }
+
+    /**
+     * 覆盖当前方案
+     */
+    function updateCurrentScheme() {
+        if (currentSchemeCode === "default") {
+            alert("不可覆盖默认搭配");
+        } else {
+            // 保存搭配内容
+            let schemeString = serializeCurrentScheme();
+            localStorage.setItem(currentSchemeCode, schemeString);
+            // 保存火抗计算方式
+            localStorage.setItem(currentSchemeCode + resistanceSumTypeSuffix, JSON.stringify(resistanceSumType));
+            // 提示信息
+            saveSchemeMessage("更新成功");
+        }
+    }
+
+    /**
+     * 删除当前方案
+     */
+    function removeCurrentScheme() {
+        if (currentSchemeCode === "default") {
+            alert("不可移除默认搭配");
+        } else {
+            let schemeListString = localStorage.getItem(schemeListKey);
+            let schemeList = JSON.parse(schemeListString);
+            let index = 0;
+            for (; index < schemeList.length; ++index) {
+                let scheme = schemeList[index];
+                if (currentSchemeCode === scheme.code) {
+                    break;
+                }
+            }
+            // 从方案列表中删除
+            schemeList.splice(index, 1);
+            localStorage.setItem(schemeListKey, JSON.stringify(schemeList));
+            // 从方案缓存中删除
+            localStorage.removeItem(currentSchemeCode);
+            // 删除火抗计算方式缓存
+            localStorage.removeItem(currentSchemeCode + resistanceSumTypeSuffix);
+            // 重新渲染
+            // 初始化默认搭配数据作为当前搭配方案
+            currentScheme = initDefaultScheme();
+            // 重新渲染方案下拉列表
+            loadSchemeListToSelect("default")
+            // 将当前（默认）搭配方案渲染到卡片文本中，并计算一次结果，将结果渲染到表头攻速、属抗中
+            baseResistanceInputDiv.attr("hidden", "hidden");
+            baseResistanceSumDiv.attr("hidden", "hidden");
+            loadCurrentSchemeToCard();
+            // 提示信息
+            saveSchemeMessage("删除成功");
+        }
+    }
+
+    /**
+     * 读取方案列表到 select 下拉框
+     * @param schemeCode 默认选项
+     */
+    function loadSchemeListToSelect(schemeCode) {
+        let schemeListString = localStorage.getItem(schemeListKey);
+        // 添加默认选项
+        const defaultOption = $("<option value=\"default\"></option>").text("默认");
+        schemeSelect.empty();
+        schemeSelect.append(defaultOption);
+        if (schemeListString != null && schemeListString !== "") {
+            let schemeList = JSON.parse(schemeListString);
+            schemeList.forEach(scheme => {
+                // 添加已保存的方案
+                const option = $("<option value=\"" + scheme.code + "\"></option>").text(scheme.name);
+                schemeSelect.append(option);
+                if (scheme.code === schemeCode) {
+                    // 选中新方案
+                    currentSchemeCode = schemeCode;
+                    schemeSelect.val(schemeCode);
+                }
+            });
+        }
+    }
+
+    /**
+     * 序列化当前方案为 JSON 字符串
+     */
+    function serializeCurrentScheme() {
+        let tempScheme = new Map();
+        for ([position, positionScheme] of currentScheme.entries()) {
+            tempScheme.set(position, [...positionScheme]);
+        }
+        return JSON.stringify([...tempScheme])
+    }
+
+    /**
+     * 解析缓存中的方案数据
+     * @param jsonStr 缓存字符串
+     */
+    function parseSchemeJsonCache(jsonStr) {
+        let tempScheme = new Map(JSON.parse(jsonStr));
+        for ([position, positionSchemeArray] of tempScheme.entries()) {
+            let positionSchemeMap = new Map(positionSchemeArray);
+            tempScheme.set(position, positionSchemeMap);
+        }
+        return tempScheme;
+    }
+
+    function saveSchemeMessage(message) {
+        const saveSchemeMessageModalBody = $("#saveSchemeMessageModalBody");
+        saveSchemeMessageModalBody.empty();
+        const para = $("<p></p>").text(message);
+        saveSchemeMessageModalBody.append(para);
+        // 弹出模态框
+        $('#saveSchemeMessageModal').modal();
+    }
+
+    /**
+     * 初始化加载所有物品数据
+     */
+    function initItemData() {
+        // 所有物品
+        const itemsJson = "[\n" +
+            "    {\n" +
+            "        \"position\": \"armorTops\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"暗影流光战袍\",\n" +
+            "        \"speed\": 8,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorTops\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 2,\n" +
+            "        \"name\": \"大地的馈赠上衣\",\n" +
+            "        \"speed\": 10,\n" +
+            "        \"resistance\": 20\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorTops\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorTops\",\n" +
+            "        \"type\": 2,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"猎食：破碎的伤痕\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorTops\",\n" +
+            "        \"type\": 2,\n" +
+            "        \"index\": 2,\n" +
+            "        \"name\": \"雷光：汇聚天雷的龙心\",\n" +
+            "        \"speed\": 16,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorTops\",\n" +
+            "        \"type\": 2,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorShoulders\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"庇护伤痛的威严\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorShoulders\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 2,\n" +
+            "        \"name\": \"猎龙者\",\n" +
+            "        \"speed\": 8,\n" +
+            "        \"resistance\": 15\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorShoulders\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 3,\n" +
+            "        \"name\": \"绽放的自然生命\",\n" +
+            "        \"speed\": 10,\n" +
+            "        \"resistance\": 15\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorShoulders\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorShoulders\",\n" +
+            "        \"type\": 2,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"冰花：缠绕的冰霜\",\n" +
+            "        \"speed\": 3,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorShoulders\",\n" +
+            "        \"type\": 2,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorBottoms\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"机械装甲下装+10\",\n" +
+            "        \"speed\": 20,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorBottoms\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 2,\n" +
+            "        \"name\": \"机械装甲下装+11\",\n" +
+            "        \"speed\": 22,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorBottoms\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 3,\n" +
+            "        \"name\": \"机械装甲下装+12\",\n" +
+            "        \"speed\": 24,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorBottoms\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorBottoms\",\n" +
+            "        \"type\": 2,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"冰花：残酷的寒气\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorBottoms\",\n" +
+            "        \"type\": 2,\n" +
+            "        \"index\": 2,\n" +
+            "        \"name\": \"猎食：消失的痛苦\",\n" +
+            "        \"speed\": 8,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorBottoms\",\n" +
+            "        \"type\": 2,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorBelts\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"星灭光离腰带\",\n" +
+            "        \"speed\": 45,\n" +
+            "        \"resistance\": 10\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorBelts\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 2,\n" +
+            "        \"name\": \"动力之渊腰带\",\n" +
+            "        \"speed\": 8,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorBelts\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorBelts\",\n" +
+            "        \"type\": 2,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"猎食：紧缩的枷锁\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorBelts\",\n" +
+            "        \"type\": 2,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorShoes\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"赛博音速长靴\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorShoes\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 2,\n" +
+            "        \"name\": \"蒸汽朋克音速鞋\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorShoes\",\n" +
+            "        \"type\": 2,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"冰花：辽阔的冻土\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorShoes\",\n" +
+            "        \"type\": 2,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorBracelet\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"黑灵缠绕手镯\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorBracelet\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 2,\n" +
+            "        \"name\": \"无人机战术手镯\",\n" +
+            "        \"speed\": 8,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorBracelet\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 3,\n" +
+            "        \"name\": \"收获之手\",\n" +
+            "        \"speed\": 8,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorBracelet\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorBracelet\",\n" +
+            "        \"type\": 2,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorNecklace\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"原子核项链\",\n" +
+            "        \"speed\": 15,\n" +
+            "        \"resistance\": -10\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorNecklace\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 2,\n" +
+            "        \"name\": \"黯星项链\",\n" +
+            "        \"speed\": 20,\n" +
+            "        \"resistance\": -10\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorNecklace\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorNecklace\",\n" +
+            "        \"type\": 2,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorRing\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"能量搜索环\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 8\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorRing\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 2,\n" +
+            "        \"name\": \"双音交映戒指\",\n" +
+            "        \"speed\": 24,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorRing\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorRing\",\n" +
+            "        \"type\": 2,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"天界联合军：希望曙光\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 20\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorRing\",\n" +
+            "        \"type\": 2,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorSubEquipment\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"光学工程眼镜\",\n" +
+            "        \"speed\": 5,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorSubEquipment\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 2,\n" +
+            "        \"name\": \"生命的喘息\",\n" +
+            "        \"speed\": 8,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorSubEquipment\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 3,\n" +
+            "        \"name\": \"挖掘之王部件\",\n" +
+            "        \"speed\": 25,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorSubEquipment\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorSubEquipment\",\n" +
+            "        \"type\": 2,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorMagicStone\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"诅咒之心\",\n" +
+            "        \"speed\": 8,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorMagicStone\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 2,\n" +
+            "        \"name\": \"逆流之魂灵珠\",\n" +
+            "        \"speed\": 15,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorMagicStone\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 3,\n" +
+            "        \"name\": \"静谧之像\",\n" +
+            "        \"speed\": 8,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorMagicStone\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorMagicStone\",\n" +
+            "        \"type\": 2,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorEarrings\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"隐匿之叹息耳环\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorEarrings\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 2,\n" +
+            "        \"name\": \"无色冰晶耳环\",\n" +
+            "        \"speed\": 8,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorEarrings\",\n" +
+            "        \"type\": 1,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"armorEarrings\",\n" +
+            "        \"type\": 2,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"titles\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"普通\",\n" +
+            "        \"speed\": 3,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"titles\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 2,\n" +
+            "        \"name\": \"至尊\",\n" +
+            "        \"speed\": 4,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"titles\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"emblems\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"灿烂x4\",\n" +
+            "        \"speed\": 6,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"emblems\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 2,\n" +
+            "        \"name\": \"华丽x4\",\n" +
+            "        \"speed\": 4.4,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"emblems\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 3,\n" +
+            "        \"name\": \"玲珑x4\",\n" +
+            "        \"speed\": 8,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"emblems\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"gems\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"神器\",\n" +
+            "        \"speed\": 3,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"gems\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 2,\n" +
+            "        \"name\": \"稀有\",\n" +
+            "        \"speed\": 2.4,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"gems\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"creatures\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"年宠\",\n" +
+            "        \"speed\": 5,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"creatures\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"creaturesEquipment\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"蓝色宠物装备\",\n" +
+            "        \"speed\": 4,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"creaturesEquipment\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"avatars\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"稀有\",\n" +
+            "        \"speed\": 16,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"avatars\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 2,\n" +
+            "        \"name\": \"神器\",\n" +
+            "        \"speed\": 20,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"avatars\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"weaponsAvatars\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"稀有克隆\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"weaponsAvatars\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 2,\n" +
+            "        \"name\": \"普通\",\n" +
+            "        \"speed\": 4,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"weaponsAvatars\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"shortcutEquipment\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"普通\",\n" +
+            "        \"speed\": 5,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"shortcutEquipment\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"其他\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"jade\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"自定义\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"idDecoration\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 0,\n" +
+            "        \"name\": \"无\",\n" +
+            "        \"speed\": 0,\n" +
+            "        \"resistance\": 0\n" +
+            "    },\n" +
+            "    {\n" +
+            "        \"position\": \"idDecoration\",\n" +
+            "        \"type\": 3,\n" +
+            "        \"index\": 1,\n" +
+            "        \"name\": \"有\",\n" +
+            "        \"speed\": 1,\n" +
+            "        \"resistance\": 0\n" +
+            "    }\n" +
+            "]";
+        const itemsMap = new Map();
+        const itemsList = JSON.parse(itemsJson);
+        // 遍历、分组
+        itemsList.forEach(item => {
+            let itemArray = itemsMap.get(item.position);
+            if (itemArray == null) {
+                itemArray = [];
+            }
+            itemArray.push(item);
+            itemsMap.set(item.position, itemArray)
+        });
+        return itemsMap;
+    }
+</script>
+
+</html>
