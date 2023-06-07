@@ -131,6 +131,21 @@ function getOnlineUser() {
     })
 }
 
+function getLatestMxtData() {
+    fetch('https://api.wyyz.club/getMxtData', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(response => {
+        return response.json()
+    }).then(mxtdata => {
+        if (mxtdata != "" && mxtdata != {}) {
+            data = mxtdata
+        }
+    })
+}
+
 function saveData() {
     localforage.setItem('data', {
         "nums": nums,
@@ -441,6 +456,7 @@ function autoUpdateInfo() {
 }
 
 function initial() {
+    getLatestMxtData()
     const toastLiveExample = document.getElementById('liveToast')
     toast = new bootstrap.Toast(toastLiveExample)
 
