@@ -283,6 +283,18 @@ function loginOut() {
     if (timerId != null) {
         clearInterval(timerId);
     }
+    var updateButton = document.getElementById("update");
+    var updateButton8 = document.getElementById("update8");
+    var resetButton = document.getElementById("reset");
+    var resetButton8 = document.getElementById("reset8");
+    const selectElement = document.getElementById('mySelect');
+    const selectElement8 = document.getElementById('mySelect8');
+    selectElement.disabled = false
+    selectElement8.disabled = false
+    resetButton.disabled = false
+    resetButton8.disabled = false
+    updateButton8.disabled = false
+    updateButton.disabled = false
 }
 
 function senderInfo() {
