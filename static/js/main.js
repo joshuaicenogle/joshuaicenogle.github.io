@@ -24,20 +24,20 @@ function changeTag() {
     triggerToast("更新成功", "请查看最新信息！")
 }
 
-function resetAllData(reload) {
+function resetAllData(reload,admin,user) {
     nums = ["00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
     mxts = ["", "", "", "", "", "", "", "", "", "", "", ""]
     qqs = ["", "", "", "", "", "", "", "", "", "", "", ""]
     nums8 = ["00", "00", "00", "00", "00", "00", "00", "00"]
     mxts8 = ["", "", "", "", "", "", "", ""]
     qqs8 = ["", "", "", "", "", "", "", ""]
-    currentUser = ""
+    currentUser = user
     currentTime8 = 0
     currentTime12 = 0
     lstTimes = 0
     hc = []
     hz = []
-    isAdmin = false
+    isAdmin = admin
     const selectElement = document.getElementById('mySelect');
     const selectElement8 = document.getElementById('mySelect8');
     selectElement.value = 0
@@ -53,7 +53,7 @@ function resetAllData(reload) {
 }
 
 function checkAuthority(userName, pwd) {
-    return fetch('https://api.wyyz.club/checkAuthority', {
+    return fetch('https://wyyz.club/checkAuthority', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -82,7 +82,7 @@ function getUserIP(onIPReceived) {
 // 发送 IP 地址给后端
 function sendIPToBackend(ip) {
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://api.wyyz.club/ipReciver', true);
+    xhr.open('POST', 'https://wyyz.club/ipReciver', true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
@@ -105,7 +105,7 @@ function getLocalTime(timestamp) {
 }
 
 function getOnlineUser() {
-    fetch('https://api.wyyz.club/getOnlineUser', {
+    fetch('https://wyyz.club/getOnlineUser', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -132,7 +132,7 @@ function getOnlineUser() {
 }
 
 function getLatestMxtData() {
-    fetch('https://api.wyyz.club/getMxtData', {
+    fetch('https://wyyz.club/getMxtData', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -302,7 +302,7 @@ function senderInfo() {
         console.log('此函数仅供admin使用')
         return
     }
-    fetch('https://api.wyyz.club/adminSetInfo', {
+    fetch('https://wyyz.club/adminSetInfo', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -436,7 +436,7 @@ function autoUpdateInfo() {
         return
     }
     console.log('定时任务执行')
-    fetch('https://api.wyyz.club/getInfo', {
+    fetch('https://wyyz.club/getInfo', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -698,7 +698,7 @@ function getMxtInfo() {
 setInterval(() => {
     // 调用函数
     getUserIP(sendIPToBackend);
-}, 1000 * 60 * 5
+}, 1000 * 5
 );
 
 localforage.getItem('data').then(function (value) {
@@ -727,7 +727,7 @@ localforage.getItem('data').then(function (value) {
     var resetButton = document.getElementById("reset");
 
     resetButton.addEventListener("click", function () {
-        resetAllData(false)
+        resetAllData(false,isAdmin,currentUser)
     });
 
     var updateButton = document.getElementById("update");
@@ -743,7 +743,7 @@ localforage.getItem('data').then(function (value) {
     var resetButton8 = document.getElementById("reset8");
 
     resetButton8.addEventListener("click", function () {
-        resetAllData(false)
+        resetAllData(false,isAdmin,currentUser)
     });
 
     var updateButton8 = document.getElementById("update8");
