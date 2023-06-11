@@ -53,7 +53,7 @@ function resetAllData(reload,admin,user) {
 }
 
 function checkAuthority(userName, pwd) {
-    return fetch('https://wyyz.club/checkAuthority', {
+    return fetch('https://api.wyyz.club/checkAuthority', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -82,7 +82,7 @@ function getUserIP(onIPReceived) {
 // 发送 IP 地址给后端
 function sendIPToBackend(ip) {
     const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://wyyz.club/ipReciver', true);
+    xhr.open('POST', 'https://api.wyyz.club/ipReciver', true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
@@ -105,7 +105,7 @@ function getLocalTime(timestamp) {
 }
 
 function getOnlineUser() {
-    fetch('https://wyyz.club/getOnlineUser', {
+    fetch('https://api.wyyz.club/getOnlineUser', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -132,7 +132,7 @@ function getOnlineUser() {
 }
 
 function getLatestMxtData() {
-    fetch('https://wyyz.club/getMxtData', {
+    fetch('https://api.wyyz.club/getMxtData', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -302,7 +302,7 @@ function senderInfo() {
         console.log('此函数仅供admin使用')
         return
     }
-    fetch('https://wyyz.club/adminSetInfo', {
+    fetch('https://api.wyyz.club/adminSetInfo', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -436,7 +436,7 @@ function autoUpdateInfo() {
         return
     }
     console.log('定时任务执行')
-    fetch('https://wyyz.club/getInfo', {
+    fetch('https://api.wyyz.club/getInfo', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
