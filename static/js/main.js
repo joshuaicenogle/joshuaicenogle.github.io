@@ -24,7 +24,7 @@ function changeTag() {
     triggerToast("更新成功", "请查看最新信息！")
 }
 
-function resetAllData(reload,admin,user) {
+function resetAllData(reload, admin, user) {
     nums = ["00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00"]
     mxts = ["", "", "", "", "", "", "", "", "", "", "", ""]
     qqs = ["", "", "", "", "", "", "", "", "", "", "", ""]
@@ -52,7 +52,7 @@ function resetAllData(reload,admin,user) {
     }
 }
 
-function checkAuthority(userName, pwd) {
+function checkAuthority(userName, pwd, isAdminLogin) {
     return fetch('https://api.wyyz.club/checkAuthority', {
         method: 'POST',
         headers: {
@@ -60,7 +60,8 @@ function checkAuthority(userName, pwd) {
         },
         body: JSON.stringify({
             user: userName,
-            pwd: pwd
+            pwd: pwd,
+            isAdminLogin: isAdminLogin
         })
     }).then(response => {
         return response.json()
@@ -165,7 +166,7 @@ function saveData() {
 }
 
 
-function version615(){
+function version615() {
     var imageShow = document.getElementById('imageShow');
     var tableShow12 = document.getElementById('tableShow12');
     var tableShow8 = document.getElementById('tableShow8');
@@ -268,6 +269,7 @@ function triggerToast(title, msg) {
 function login() {
     var userNum = document.getElementById("user-num");
     var userPwd = document.getElementById("user-pwd");
+    var isAdminLogin = document.getElementById('adminCheck').checked;
     var userNumValue = userNum.value;
     var userPwdValue = userPwd.value;
     console.log("userNum: " + userNumValue)
@@ -275,20 +277,47 @@ function login() {
     var modal = document.getElementById('exampleModal');
     var modalInstance = bootstrap.Modal.getInstance(modal);
     modalInstance.hide();
+    if (userNumValue in data) {
+        console.log("user in mxtData")
+    } else {
+        alert("用户输入的编号不在记录中，请重新输入！")
+        return
+    }
 
-    checkAuthority(userNumValue, userPwdValue).then(result => {
+    if (userPwdValue == "") {
+        alert("请输入验证码|密码！")
+        return;
+    }
+
+    checkAuthority(userNumValue, userPwdValue, isAdminLogin).then(result => {
         console.log(result, 'login')
-        if (result['result'] == false) {
+        if (result['type'] == "notAdmin"){
+            alert("用户不是admin，请重新输入！")
+            return;
+        }
+
+
+        if (result['result'] == false && result['role'] == 'admin') {
             triggerToast("登陆失败", "Admin用户需要正确的验证码才能登陆。")
             return
         }
+
         if (result['role'] == 'admin' && result['result'] == true) {
             isAdmin = true
+        }
+
+        if (result['result'] == false) {
+            triggerToast("登陆失败", "用户需要正确的密码才能登陆（第一次登陆时设置）。")
+            return
         }
         currentUser = userNumValue
         saveData()
         setUser()
         triggerToast("登陆成功", `欢迎你，${isAdmin == false ? "用户" : "管理员"}：` + currentUser + '!')
+
+        if (result['type'] == "firstLogin") {
+            alert("新用户你好，欢迎使用维一圆桌工具！")
+        }
         getUserIP(sendIPToBackend);
     });
 
@@ -315,12 +344,12 @@ function loginOut() {
     var resetButton8 = document.getElementById("reset8");
     const selectElement = document.getElementById('mySelect');
     const selectElement8 = document.getElementById('mySelect8');
-    selectElement.disabled = false
-    selectElement8.disabled = false
-    resetButton.disabled = false
-    resetButton8.disabled = false
-    updateButton8.disabled = false
-    updateButton.disabled = false
+    selectElement.disabled = true
+    selectElement8.disabled = true
+    resetButton.disabled = true
+    resetButton8.disabled = true
+    updateButton8.disabled = true
+    updateButton.disabled = true
 }
 
 function senderInfo() {
@@ -753,7 +782,7 @@ localforage.getItem('data').then(function (value) {
     var resetButton = document.getElementById("reset");
 
     resetButton.addEventListener("click", function () {
-        resetAllData(false,isAdmin,currentUser)
+        resetAllData(false, isAdmin, currentUser)
     });
 
     var updateButton = document.getElementById("update");
@@ -769,7 +798,7 @@ localforage.getItem('data').then(function (value) {
     var resetButton8 = document.getElementById("reset8");
 
     resetButton8.addEventListener("click", function () {
-        resetAllData(false,isAdmin,currentUser)
+        resetAllData(false, isAdmin, currentUser)
     });
 
     var updateButton8 = document.getElementById("update8");
