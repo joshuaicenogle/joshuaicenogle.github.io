@@ -7,312 +7,388 @@
     <title>维一圆桌工具</title>
     <link rel="icon" href="static/img/favicon.ico" type="image/png">
     <link href="static/css/bootstrap.min.css" rel="stylesheet">
+    -
     <link href="static/css/utils.css" rel="stylesheet">
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01"
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01"
                 aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-center" id="navbarTogglerDemo01">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#" onclick="home()">主页</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#" onclick="twelve()">12人团</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="eight()">8人团</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="lst()">流水团</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"
-                            onclick="window.open('https://www.bilibili.com/video/BV1RM41157Vo', '_blank')">巴卡尔攻略(困难)</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"
-                            onclick="window.open('https://bbs.colg.cn/thread-8826466-1-1.html', '_blank')">回廊攻略</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="window.open('calc.html', '_blank')">攻速鞋计算器</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="window.open('https://skycity.top/', '_blank')">无名空岛</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"
-                            onclick="window.open('https://bbs.colg.cn/thread-8189249-1-1.html', '_blank')">全职业百科</a>
-                    </li>
-                    <li class="nav-item" style="margin-left: 150px">
-                        <a class="nav-link" href="#" id="currentInfo" style="font-weight: bold;">当前未开团或者您不在团中</a>
-                    </li>
-                </ul>
-                <div style="margin: 0 10px;"></div>
-                <form class="d-flex" role="search">
-                    <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarTogglerDemo01">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#" onclick="home()">主页</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="#" onclick="twelve()">12人团</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="eight()">8人团</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="lst()">流水团</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" aria-current="page" href="#" onclick="version615()">615版本攻略</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#"
+                       onclick="window.open('https://bbs.colg.cn/thread-8826466-1-1.html', '_blank')">回廊攻略</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="window.open('calc.html', '_blank')">攻速鞋计算器</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" onclick="window.open('https://skycity.top/', '_blank')">无名空岛</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#"
+                       onclick="window.open('https://bbs.colg.cn/thread-8189249-1-1.html', '_blank')">全职业百科</a>
+                </li>
+                <li class="nav-item" style="margin-left: 150px">
+                    <a class="nav-link" href="#" id="currentInfo"
+                       style="font-weight: bold;">当前未开团或者您不在团中</a>
+                </li>
+            </ul>
+            <div style="margin: 0 10px;"></div>
+            <form class="d-flex" role="search">
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
                         data-bs-target="#exampleModal" id="loginBtn">登陆
-                    </button>
-                    <div style="margin: 0 10px;"></div>
-                    <button type="button" class="btn btn-secondary" id="logoutBtn" disabled="true"
+                </button>
+                <div style="margin: 0 10px;"></div>
+                <button type="button" class="btn btn-secondary" id="logoutBtn" disabled="true"
                         onclick="loginOut()">登出
-                    </button>
-                    <div style="margin: 0 10px;"></div>
-                    <button type="button" class="btn btn-secondary" id="fightBtn" disabled="true" onclick="fight()">开团
-                    </button>
-                    <div style="margin: 0 10px;"></div>
-                    <button type="button" class="btn btn-secondary" id="userListBtn" data-bs-toggle="modal" data-bs-target="#userList" onclick="getOnlineUser()">用户
-                    </button>
-                    <div style="margin: 0 10px;"></div>
-                    <button type="button" class="btn btn-secondary" id="onlineUser" onclick="resetAllData(true)">初始化
-                    </button>
-                    <div style="margin: 0 10px;"></div>
-                    <button class="btn btn-secondary"
+                </button>
+                <div style="margin: 0 10px;"></div>
+                <button type="button" class="btn btn-secondary" id="fightBtn" disabled="true" onclick="fight()">开团
+                </button>
+                <div style="margin: 0 10px;"></div>
+                <button type="button" class="btn btn-secondary" id="userListBtn" data-bs-toggle="modal"
+                        data-bs-target="#userList" onclick="getOnlineUser()">用户
+                </button>
+                <div style="margin: 0 10px;"></div>
+                <button type="button" class="btn btn-secondary" id="onlineUser" onclick="resetAllData(true)">初始化
+                </button>
+                <div style="margin: 0 10px;"></div>
+                <button class="btn btn-secondary"
                         onclick="window.open('https://qm.qq.com/cgi-bin/qm/qr?k=bspMEHyc06yRCrGkaSdp6FOduR_9B3iR&jump_from=webapi&authKey=nMj9mIU54VtX5ahqaqheY0Bk+5WLodv5/ABJJ7CmrcR5BPc4ZVHzQJggb8rUjDD0', '_blank')">
-                        加入群聊
-                    </button>
+                    加入群聊
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<!-- Modal -->
+<div class="modal fade" id="userList" tabindex="-1" aria-labelledby="userListLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="userListLabel">历史用户记录</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ol class="list-group list-group-numbered" id="userListOl">
+                </ol>
+            </div>
+            <div class="modal-footer  d-flex justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">欢迎使用维一圆桌工具</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label class="col-form-label">请输入编号（审核群中上传截图获取）：</label>
+                        <input type="text" class="form-control" id="user-num">
+                    </div>
+                    <div class="mb-3">
+                        <label class="col-form-label">请输入验证码（开团团长才需要，从006处获取）：</label>
+                        <input type="text" class="form-control" id="user-pwd">
+                    </div>
                 </form>
             </div>
-        </div>
-    </nav>
-
-    <!-- Modal -->
-    <div class="modal fade" id="userList" tabindex="-1" aria-labelledby="userListLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="userListLabel">历史用户记录</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <ol class="list-group list-group-numbered" id="userListOl">
-                    </ol>
-                </div>
-                <div class="modal-footer  d-flex justify-content-center">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="login()">登陆</button>
             </div>
         </div>
     </div>
+</div>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">欢迎使用维一圆桌工具</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="mb-3">
-                            <label class="col-form-label">请输入编号（审核群中上传截图获取）：</label>
-                            <input type="text" class="form-control" id="user-num">
-                        </div>
-                        <div class="mb-3">
-                            <label class="col-form-label">请输入验证码（开团团长才需要，从006处获取）：</label>
-                            <input type="text" class="form-control" id="user-pwd">
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer d-flex justify-content-center">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
-                    <button type="button" class="btn btn-primary" onclick="login()">登陆</button>
-                </div>
-            </div>
+<hr>
+
+<div class="container" id="imageShow">
+    <div class="row  justify-content-center align-items-center"
+         style="background-color: #cccccc;margin-top: 100px;margin-right: 100px">
+        <div class="col-md-6">
+            <!-- 文字内容的代码 -->
+            <h2>维一圆桌</h2>
+            <br>
+            <p>
+                圆桌团相信很多经历过乌龟卢克版本的都清楚，是效率超高的互带打团模式，在版本长草期以及如今野团环境参差不齐的情况下非常适合高效。
+                <br>我们的圆桌团已经开了2个多月了，每周至少3轮圆桌团，一轮6波，一轮100分钟（从集合到结束）。
+                <br>既带了刚到门槛混材料的混子，又节约了找团等人的时间，非常适合多号党玩家。<br>当然唯一的缺点就是如果人少的话就不能随时开，所以这也是我们扩招的目的。
+                <br>为了保证质量和效率我们有专门的审核群负责审核，也为了接下来的困难模式做准备，欢迎跨3A的多号党玩家加入我们的团体！
+            </p>
         </div>
-    </div>
-
-    <hr>
-
-    <div class="container" id="imageShow">
-        <div class="row  justify-content-center align-items-center"
-            style="background-color: #cccccc;margin-top: 100px;margin-right: 100px">
-            <div class="col-md-6">
-                <!-- 文字内容的代码 -->
-                <h2>维一圆桌</h2>
-                <br>
-                <p>
-                    圆桌团相信很多经历过乌龟卢克版本的都清楚，是效率超高的互带打团模式，在版本长草期以及如今野团环境参差不齐的情况下非常适合高效。
-                    <br>我们的圆桌团已经开了2个多月了，每周至少3轮圆桌团，一轮6波，一轮100分钟（从集合到结束）。
-                    <br>既带了刚到门槛混材料的混子，又节约了找团等人的时间，非常适合多号党玩家。<br>当然唯一的缺点就是如果人少的话就不能随时开，所以这也是我们扩招的目的。
-                    <br>为了保证质量和效率我们有专门的审核群负责审核，也为了接下来的困难模式做准备，欢迎跨3A的多号党玩家加入我们的团体！
-                </p>
-            </div>
-            <div class="d-flex col-md-6">
-                <div id="carouselExampleIndicators" class="carousel slide" style="width: 800px;height: 500px">
-                    <div class="carousel-indicators">
-                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0"
+        <div class="d-flex col-md-6">
+            <div id="carouselExampleIndicators" class="carousel slide" style="width: 800px;height: 500px">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0"
                             class="active" aria-current="true" aria-label="Slide 1"></button>
-                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
+                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
                             aria-label="Slide 2"></button>
-                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
+                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
                             aria-label="Slide 3"></button>
-                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3"
+                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="3"
                             aria-label="Slide 4"></button>
-                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="4"
+                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="4"
                             aria-label="Slide 5"></button>
-                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="5"
+                    <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="5"
                             aria-label="Slide 6"></button>
+                </div>
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="static/img/1.png" class="d-block w-auto" alt="...">
                     </div>
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <img src="static/img/1.png" class="d-block w-auto" alt="...">
-                        </div>
-                        <div class="carousel-item">
-                            <img src="static/img/2.png" class="d-block w-auto" alt="...">
-                        </div>
-                        <div class="carousel-item">
-                            <img src="static/img/3.png" class="d-block w-auto" alt="...">
-                        </div>
-                        <div class="carousel-item">
-                            <img src="static/img/4.png" class="d-block w-auto" alt="...">
-                        </div>
-                        <div class="carousel-item">
-                            <img src="static/img/5.png" class="d-block w-auto" alt="...">
-                        </div>
-                        <div class="carousel-item">
-                            <img src="static/img/6.png" class="d-block w-auto" alt="...">
-                        </div>
+                    <div class="carousel-item">
+                        <img src="static/img/2.png" class="d-block w-auto" alt="...">
                     </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+                    <div class="carousel-item">
+                        <img src="static/img/3.png" class="d-block w-auto" alt="...">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="static/img/4.png" class="d-block w-auto" alt="...">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="static/img/5.png" class="d-block w-auto" alt="...">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="static/img/6.png" class="d-block w-auto" alt="...">
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
                         data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
                         data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="tableShow12" style="display: none;">
+    <table class="table" id="mainTable">
+        <thead>
+        <tr>
+            <th scope="col">编号</th>
+            <th scope="col">冒险团</th>
+            <th scope="col">qq</th>
+            <th scope="col">第1波</th>
+            <th scope="col">第2波</th>
+            <th scope="col">第3波</th>
+            <th scope="col">第4波</th>
+            <th scope="col">第5波</th>
+            <th scope="col">第6波</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr id="c1" class="table-warning"></tr>
+        <tr id="c2" class="table-secondary"></tr>
+        <tr id="c3" class="table-success"></tr>
+        <tr id="c4" class="table-warning"></tr>
+        <tr id="c5" class="table-secondary"></tr>
+        <tr id="c6" class="table-success"></tr>
+        <tr id="c7" class="table-warning"></tr>
+        <tr id="c8" class="table-secondary"></tr>
+        <tr id="c9" class="table-success"></tr>
+        <tr id="c10" class="table-warning"></tr>
+        <tr id="c11" class="table-secondary"></tr>
+        <tr id="c12" class="table-success"></tr>
+        </tbody>
+    </table>
+
+    <div class="d-flex justify-content-center mt-4">
+        <button type="button" class="btn btn-primary mx-2" style="width: 200px;" id="reset" disabled="true">重置
+        </button>
+        <button type="button" class="btn btn-primary mx-2" style="width: 200px;" id="update" disabled="true">更新
+        </button>
+        <select class="form-select" id="mySelect" style="width: 200px" disabled="true">
+            <option value="0">请选择当前波数</option>
+            <option value="1">第一波</option>
+            <option value="2">第二波</option>
+            <option value="3">第三波</option>
+            <option value="4">第四波</option>
+            <option value="5">第五波</option>
+            <option value="6">第六波</option>
+        </select>
+    </div>
+</div>
+
+<div id="tableShow8" style="display: none;">
+    <table class="table" id="mainTable8">
+        <thead>
+        <tr>
+            <th scope="col">编号</th>
+            <th scope="col">冒险团</th>
+            <th scope="col">qq</th>
+            <th scope="col">第1波</th>
+            <th scope="col">第2波</th>
+            <th scope="col">第3波</th>
+            <th scope="col">第4波</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr id="c81" class="table-warning"></tr>
+        <tr id="c82" class="table-secondary"></tr>
+        <tr id="c83" class="table-success"></tr>
+        <tr id="c84" class="table-warning"></tr>
+        <tr id="c85" class="table-secondary"></tr>
+        <tr id="c86" class="table-success"></tr>
+        <tr id="c87" class="table-warning"></tr>
+        <tr id="c88" class="table-secondary"></tr>
+        </tbody>
+    </table>
+    <div class="d-flex justify-content-center mt-4">
+        <button type="button" class="btn btn-primary mx-2" style="width: 200px;" id="reset8" disabled="true">重置
+        </button>
+        <button type="button" class="btn btn-primary mx-2" style="width: 200px;" id="update8" disabled="true">更新
+        </button>
+        <select class="form-select" id="mySelect8" style="width: 200px" disabled="true">
+            <option value="0">请选择当前波数</option>
+            <option value="1">第一波</option>
+            <option value="2">第二波</option>
+            <option value="3">第三波</option>
+            <option value="4">第四波</option>
+        </select>
+    </div>
+</div>
+
+<div id="lst" style="display: none;">
+    <table class="table" id="mainTableLst">
+        <thead>
+        <tr>
+            <th scope="col">第几波</th>
+            <th scope="col">红C1</th>
+            <th scope="col">红C2</th>
+            <th scope="col">红C3</th>
+            <th scope="col">红奶</th>
+            <th scope="col">混子1</th>
+            <th scope="col">混子2</th>
+            <th scope="col">混子3</th>
+            <th scope="col">混子4</th>
+        </tr>
+        </thead>
+        <tbody id="lstTbody">
+        </tbody>
+    </table>
+</div>
+
+<div class="container" id="version615" style="display: none;">
+    <div class="container">
+        <div class="row row-cols-2 row-cols-md-2 g-4">
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <iframe width="100%" height="300" src="//player.bilibili.com/player.html?aid=997059438&bvid=BV1Ks4y1v73U&cid=1156314073&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+                        <p class="card-text">DNF困难巴卡尔：攻坚路线思路</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <iframe width="100%" height="300" src="//player.bilibili.com/player.html?aid=571249802&bvid=BV1Zz4y1t7gR&cid=1132501824&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+                        <p class="card-text">DNF巴卡尔困难模式攻坚流程</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <iframe width="100%" height="300" src="//player.bilibili.com/player.html?aid=739893154&bvid=BV19k4y1Y7q7&cid=1093705611&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+                        <p class="card-text">巴卡尔困难二阶段【暴龙王终结】机制攻略</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <iframe width="100%" height="300" src="//player.bilibili.com/player.html?aid=827194028&bvid=BV1fu4y1d7R7&cid=1159548652&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+                        <p class="card-text">DNF15周年巴卡尔困难开荒 弓箭少女逐龙战</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <iframe width="100%" height="300" src="//player.bilibili.com/player.html?aid=572243619&bvid=BV1Cz4y1i751&cid=1159967657&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+                        <p class="card-text">DNF：弓箭手旅人职业百科，从入门到精通的玩法技巧</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <iframe width="100%" height="300" src="//player.bilibili.com/player.html?aid=954684783&bvid=BV1jW4y197eg&cid=1159422327&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+                        <p class="card-text">希曼带你看DNF15周年庆重点内容</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <iframe width="100%" height="300" src="//player.bilibili.com/player.html?aid=742190643&bvid=BV1bk4y1n7ZZ&cid=1161047454&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+                        <p class="card-text">DNF：缪斯打造和玩法技巧攻略，国服特色优化简单易上手</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <iframe width="100%" height="300" src="//player.bilibili.com/player.html?aid=954676891&bvid=BV1WW4y197RE&cid=1160299365&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+                        <p class="card-text">DNF缪斯入门攻略(技能.装备.护石.加点)</p>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <div id="tableShow12" style="display: none;">
-        <table class="table" id="mainTable">
-            <thead>
-                <tr>
-                    <th scope="col">编号</th>
-                    <th scope="col">冒险团</th>
-                    <th scope="col">qq</th>
-                    <th scope="col">第1波</th>
-                    <th scope="col">第2波</th>
-                    <th scope="col">第3波</th>
-                    <th scope="col">第4波</th>
-                    <th scope="col">第5波</th>
-                    <th scope="col">第6波</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr id="c1" class="table-warning"></tr>
-                <tr id="c2" class="table-secondary"></tr>
-                <tr id="c3" class="table-success"></tr>
-                <tr id="c4" class="table-warning"></tr>
-                <tr id="c5" class="table-secondary"></tr>
-                <tr id="c6" class="table-success"></tr>
-                <tr id="c7" class="table-warning"></tr>
-                <tr id="c8" class="table-secondary"></tr>
-                <tr id="c9" class="table-success"></tr>
-                <tr id="c10" class="table-warning"></tr>
-                <tr id="c11" class="table-secondary"></tr>
-                <tr id="c12" class="table-success"></tr>
-            </tbody>
-        </table>
-
-        <div class="d-flex justify-content-center mt-4">
-            <button type="button" class="btn btn-primary mx-2" style="width: 200px;" id="reset" disabled="true">重置</button>
-            <button type="button" class="btn btn-primary mx-2" style="width: 200px;" id="update" disabled="true">更新</button>
-            <select class="form-select" id="mySelect" style="width: 200px" disabled="true">
-                <option value="0">请选择当前波数</option>
-                <option value="1">第一波</option>
-                <option value="2">第二波</option>
-                <option value="3">第三波</option>
-                <option value="4">第四波</option>
-                <option value="5">第五波</option>
-                <option value="6">第六波</option>
-            </select>
+</div>
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto" id="mystrong"></strong>
+            <small>now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body" id="my-toast-body">
         </div>
     </div>
+</div>
 
-    <div id="tableShow8" style="display: none;">
-        <table class="table" id="mainTable8">
-            <thead>
-                <tr>
-                    <th scope="col">编号</th>
-                    <th scope="col">冒险团</th>
-                    <th scope="col">qq</th>
-                    <th scope="col">第1波</th>
-                    <th scope="col">第2波</th>
-                    <th scope="col">第3波</th>
-                    <th scope="col">第4波</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr id="c81" class="table-warning"></tr>
-                <tr id="c82" class="table-secondary"></tr>
-                <tr id="c83" class="table-success"></tr>
-                <tr id="c84" class="table-warning"></tr>
-                <tr id="c85" class="table-secondary"></tr>
-                <tr id="c86" class="table-success"></tr>
-                <tr id="c87" class="table-warning"></tr>
-                <tr id="c88" class="table-secondary"></tr>
-            </tbody>
-        </table>
-        <div class="d-flex justify-content-center mt-4">
-            <button type="button" class="btn btn-primary mx-2" style="width: 200px;" id="reset8" disabled="true">重置</button>
-            <button type="button" class="btn btn-primary mx-2" style="width: 200px;" id="update8" disabled="true">更新</button>
-            <select class="form-select" id="mySelect8" style="width: 200px" disabled="true">
-                <option value="0">请选择当前波数</option>
-                <option value="1">第一波</option>
-                <option value="2">第二波</option>
-                <option value="3">第三波</option>
-                <option value="4">第四波</option>
-            </select>
-        </div>
-    </div>
-
-    <div id="lst" style="display: none;">
-        <table class="table" id="mainTableLst">
-            <thead>
-                <tr>
-                    <th scope="col">第几波</th>
-                    <th scope="col">红C1</th>
-                    <th scope="col">红C2</th>
-                    <th scope="col">红C3</th>
-                    <th scope="col">红奶</th>
-                    <th scope="col">混子1</th>
-                    <th scope="col">混子2</th>
-                    <th scope="col">混子3</th>
-                    <th scope="col">混子4</th>
-                </tr>
-            </thead>
-            <tbody id="lstTbody">
-            </tbody>
-        </table>
-    </div>
-
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <strong class="me-auto" id="mystrong"></strong>
-                <small>now</small>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body" id="my-toast-body">
-            </div>
-        </div>
-    </div>
-
-    <script src="static/js/bootstrap.bundle.min.js"></script>
-    <script src="static/js/localforage.min.js"></script>
-    <script src="static/js/data.js"></script>
-    <script src="static/js/main.js"></script>
+<script src="static/js/bootstrap.bundle.min.js"></script>
+<script src="static/js/localforage.min.js"></script>
+<script src="static/js/data.js"></script>
+<script src="static/js/main.js"></script>
 </body>
 
 </html>

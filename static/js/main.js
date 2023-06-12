@@ -164,12 +164,32 @@ function saveData() {
     })
 }
 
+
+function version615(){
+    var imageShow = document.getElementById('imageShow');
+    var tableShow12 = document.getElementById('tableShow12');
+    var tableShow8 = document.getElementById('tableShow8');
+    var lstDiv = document.getElementById('lst');
+    var fight = document.getElementById('fightBtn');
+    var gl = document.getElementById('version615');
+    gl.style = ""
+    fight.disabled = true
+    imageShow.style = "display: none;"
+    tableShow12.style = "display: none;"
+    tableShow8.style = "display: none;"
+    lstDiv.style = "display: none;"
+    userSelect = 5
+    changeTag()
+}
+
 function home() {
     var imageShow = document.getElementById('imageShow');
     var tableShow12 = document.getElementById('tableShow12');
     var tableShow8 = document.getElementById('tableShow8');
     var lstDiv = document.getElementById('lst');
     var fight = document.getElementById('fightBtn');
+    var gl = document.getElementById('version615');
+    gl.style = "display: none;"
     fight.disabled = true
     imageShow.style = ""
     tableShow12.style = "display: none;"
@@ -185,6 +205,8 @@ function eight() {
     var tableShow8 = document.getElementById('tableShow8');
     var lstDiv = document.getElementById('lst');
     var fight = document.getElementById('fightBtn');
+    var gl = document.getElementById('version615');
+    gl.style = "display: none;"
     fight.disabled = true
     imageShow.style = "display: none;"
     tableShow12.style = "display: none;"
@@ -200,6 +222,8 @@ function twelve() {
     var tableShow8 = document.getElementById('tableShow8');
     var lstDiv = document.getElementById('lst');
     var fight = document.getElementById('fightBtn');
+    var gl = document.getElementById('version615');
+    gl.style = "display: none;"
     fight.disabled = true
     imageShow.style = "display: none;"
     tableShow12.style = ""
@@ -215,6 +239,8 @@ function lst() {
     var tableShow8 = document.getElementById('tableShow8');
     var lstDiv = document.getElementById('lst');
     var fight = document.getElementById('fightBtn');
+    var gl = document.getElementById('version615');
+    gl.style = "display: none;"
     fight.disabled = false
     imageShow.style = "display: none;"
     tableShow12.style = "display: none;"
