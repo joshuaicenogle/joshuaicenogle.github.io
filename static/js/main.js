@@ -558,14 +558,12 @@ function initial() {
     });
 
     const types = [
-        ["奶", "混", "C", "混", "C", "混"],
-        ["混", "奶", "混", "C", "混", "C"],
-        ["C", "混", "奶", "混", "C", "混"],
-        ["混", "C", "混", "奶", "混", "C"],
-        ["C", "混", "C", "混", "奶", "混"],
-        ["混", "C", "混", "C", "混", "奶"],
+        ["奶", "混", "C", "混"],
+        ["混", "奶", "混", "C"],
+        ["C", "混", "奶", "混"],
+        ["混", "C", "混", "奶"]
     ]
-    const defaultTbale = '<table class="table "> <thead> <tr> <th scope="col">编号</th> <th scope="col">冒险团</th> <th scope="col">球球号</th> <th scope="col">第1波</th> <th scope="col">第2波</th> <th scope="col">第3波</th> <th scope="col">第4波</th> <th scope="col">第5波</th> <th scope="col">第6波</th> </tr> </thead> <tbody> <tr id="c1" class="table-warning"></tr> <tr id="c2" class="table-secondary"></tr> <tr id="c3" class="table-success"></tr> <tr id="c4" class="table-warning"></tr> <tr id="c5" class="table-secondary"></tr> <tr id="c6" class="table-success"></tr> <tr id="c7" class="table-warning"></tr> <tr id="c8" class="table-secondary"></tr> <tr id="c9" class="table-success"></tr> <tr id="c10" class="table-warning"></tr> <tr id="c11" class="table-secondary"></tr> <tr id="c12" class="table-success"></tr> </tbody> </table>'
+    const defaultTbale = '<table class="table "> <thead> <tr> <th scope="col">编号</th> <th scope="col">冒险团</th> <th scope="col">球球号</th> <th scope="col">第1波</th> <th scope="col">第2波</th> <th scope="col">第3波</th> <th scope="col">第4波</th> </tr> </thead> <tbody> <tr id="c1" class="table-warning"></tr> <tr id="c2" class="table-secondary"></tr> <tr id="c3" class="table-success"></tr> <tr id="c4" class="table-warning"></tr> <tr id="c5" class="table-secondary"></tr> <tr id="c6" class="table-success"></tr> <tr id="c7" class="table-warning"></tr> <tr id="c8" class="table-secondary"></tr> <tr id="c9" class="table-success"></tr> <tr id="c10" class="table-warning"></tr> <tr id="c11" class="table-secondary"></tr> <tr id="c12" class="table-success"></tr> </tbody> </table>'
     //default num
 
     const currnetInfo = document.getElementById('currentInfo')
@@ -636,9 +634,9 @@ function initial() {
             saveData()
         });
 
-        for (var y = 0; y < 6; y++) {
-            var name = `${nums[x - 1]}-${types[Math.floor((x - 1) / 2)][y]}`
-            var styleType = types[Math.floor((x - 1) / 2)][y] == "C" ? "table-primary" : types[Math.floor((x - 1) / 2)][y] == "奶" ? "table-info" : "table-light"
+        for (var y = 0; y < 4; y++) {
+            var name = `${nums[x - 1]}-${types[Math.floor((x - 1) / 3)][y]}`
+            var styleType = types[Math.floor((x - 1) / 3)][y] == "C" ? "table-primary" : types[Math.floor((x - 1) / 3)][y] == "奶" ? "table-info" : "table-light"
             if (nums[x - 1] === currentUser && y + 1 == currentTime12) {
                 styleType = "table-danger highlight"
             }
